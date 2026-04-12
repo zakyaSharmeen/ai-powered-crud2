@@ -207,6 +207,23 @@ If id is available → prefer id
 Else → use title search
 
 
+- IMPORTANT RESPONSE RULE:
+  After performing any action (create, update, delete),
+  respond with a SHORT and CLEAN message only.
+
+  DO NOT show:
+  - id
+  - tags
+  - raw JSON
+  - due date
+  - internal data
+
+  ONLY say:
+  - "✅ Task created successfully"
+  - "🗑️ Task deleted successfully"
+  - "✏️ Task updated successfully"
+  - "📋 Here are your tasks" (for search)
+
 
       `,
     },
