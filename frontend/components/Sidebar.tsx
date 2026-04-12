@@ -66,7 +66,7 @@ export default function Sidebar({
       </div>
       <button
         onClick={refresh}
-        className="mt-auto bg-slate-700 p-2 rounded-lg text-white">
+        className="mt-[185px] bg-slate-700 p-2 rounded-lg text-white">
         Refresh
       </button>
     </div>
