@@ -40,9 +40,10 @@ export default function Chat({ setTodos }: Props) {
   };
 
   return (
-    <div className="bg-slate-800 p-4 rounded-2xl flex flex-col h-full">
+    // <div className="bg-slate-800 p-4 rounded-2xl flex flex-col h-full">
+    <div className="bg-slate-800 h-full rounded-xl flex flex-col p-4">
+      {" "}
       <h2 className="text-gray-400 mb-2">AI Assistant</h2>
-
       <div className="flex-1 overflow-y-auto space-y-2 mb-4">
         {chat.map((msg, i) => (
           <div
