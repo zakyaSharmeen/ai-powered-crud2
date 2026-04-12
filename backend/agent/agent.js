@@ -107,21 +107,21 @@ const tools = [
       },
     },
   },
-  // {
-  //   type: "function",
-  //   function: {
-  //     name: "delete_todo",
-  //     description: "Delete todo by id or title",
-  //     parameters: {
-  //       type: "object",
-  //       properties: {
-  //         id: { type: "string" },
-  //         title: { type: "string" },
-  //       },
-  //       required: ["id"],
-  //     },
-  //   },
-  // },
+  {
+    type: "function",
+    function: {
+      name: "delete_todo",
+      description: "Delete todo by id or title",
+      parameters: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+        },
+        required: ["id"],
+      },
+    },
+  },
 
   {
     type: "function",
