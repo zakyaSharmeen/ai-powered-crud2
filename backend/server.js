@@ -7,7 +7,11 @@ import todoRoute from "./routes/todo.js";
 dotenv.config({ quiet: true });
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://ai-powered-crud2-1.onrender.com",
+  }),
+);
 app.use(express.json());
 
 import mongoose from "mongoose";
