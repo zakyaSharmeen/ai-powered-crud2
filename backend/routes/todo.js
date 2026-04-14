@@ -28,6 +28,21 @@ router.get("/", async (req, res) => {
   //   if (startDate) filter.dueDate.$gte = new Date(startDate);
   //   if (endDate) filter.dueDate.$lte = new Date(endDate);
   // }
+  // if (startDate || endDate) {
+  //   filter.dueDate = {};
+
+  //   if (startDate) {
+  //     const start = new Date(startDate);
+  //     start.setHours(0, 0, 0, 0);
+  //     filter.dueDate.$gte = start;
+  //   }
+
+  //   if (endDate) {
+  //     const end = new Date(endDate);
+  //     end.setHours(23, 59, 59, 999);
+  //     filter.dueDate.$lte = end;
+  //   }
+  // }
   if (startDate || endDate) {
     filter.dueDate = {};
 
