@@ -50,7 +50,10 @@ export default function App() {
   };
 
   const filterByDate = async (start: string, end: string) => {
-    let url = "http://localhost:5000/todos?";
+    const BASE_URL = "https://ai-powered-crud2.onrender.com";
+
+    // let url = "http://localhost:5000/todos?";
+    let url = `${BASE_URL}/todos?`;
 
     if (start) url += `startDate=${start}&`;
     if (end) url += `endDate=${end}`;
