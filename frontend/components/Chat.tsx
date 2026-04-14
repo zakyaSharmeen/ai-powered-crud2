@@ -66,7 +66,7 @@ export default function Chat({ setTodos }: Props) {
         />
         <button
           onClick={handleSend}
-          className="bg-green-500 px-4 rounded-lg cursor-pointer text-white">
+          className="bg-green-500 px-4 rounded-lg cursor-pointer text-white dark:text-white">
           Send
         </button>
       </div>
