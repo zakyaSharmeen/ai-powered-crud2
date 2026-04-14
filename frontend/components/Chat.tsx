@@ -40,17 +40,19 @@ export default function Chat({ setTodos }: Props) {
   };
 
   return (
-    // <div className="bg-slate-800 p-4 rounded-2xl flex flex-col h-full">
-    <div className="bg-slate-800 h-full rounded-xl flex flex-col p-4">
+    <div className="bg-gray-100 dark:bg-slate-800 text-black dark:text-white h-full rounded-xl flex flex-col p-4">
       {" "}
       <h2 className="text-gray-400 mb-2">AI Assistant</h2>
       <div className="flex-1 overflow-y-auto space-y-2 mb-4">
         {chat.map((msg, i) => (
           <div
             key={i}
-            className={`p-3 rounded-lg max-w-[70%] ${
-              msg.role === "user" ? "bg-slate-700" : "bg-green-600 ml-auto"
-            }`}>
+            className={`flex-1 p-2 rounded-lg text-black dark:text-white 
+  ${
+    msg.role === "user"
+      ? "bg-gray-200 dark:bg-slate-700"
+      : "bg-green-600 ml-auto"
+  }`}>
             {msg.text}
           </div>
         ))}
@@ -59,7 +61,7 @@ export default function Chat({ setTodos }: Props) {
         <input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="flex-1 p-2 rounded-lg bg-slate-700 text-white"
+          className="flex-1 p-2 rounded-lg bg-gray-200 dark:bg-slate-700 text-black dark:text-white"
           placeholder="Ask AI..."
         />
         <button onClick={handleSend} className="bg-green-500 px-4 rounded-lg">

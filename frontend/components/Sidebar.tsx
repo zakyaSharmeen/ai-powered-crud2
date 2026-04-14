@@ -12,6 +12,8 @@ interface Props {
   refresh: () => void;
   filterStatus: (status: "all" | "completed" | "pending") => void;
   filterByDate: (start: string, end: string) => void; // ✅ added
+  darkMode: boolean;
+  setDarkMode: (value: boolean) => void;
 }
 
 export default function Sidebar({
@@ -19,6 +21,8 @@ export default function Sidebar({
   refresh,
   filterStatus,
   filterByDate,
+  darkMode,
+  setDarkMode,
 }: Props) {
   const completedCount = todos.filter((t) => t.completed).length;
   const pendingCount = todos.filter((t) => !t.completed).length;
@@ -27,26 +31,27 @@ export default function Sidebar({
 
   return (
     // <div className="w-full md:w-72 bg-slate-800 p-4 flex flex-col gap-6">
-    <div className="h-screen bg-slate-800 p-4 flex flex-col gap-6">
-      {" "}
-      <h1 className="text-xl font-bold text-white">🧠 AI Todos</h1>
+    <div className="h-screen bg-gray-100 dark:bg-slate-800 text-black dark:text-white p-4 flex flex-col gap-6">
+      <h1 className="text-xl font-bold text-black dark:text-white">
+        🧠 AI Todos
+      </h1>
       {/* Filters */}
       <div className="flex flex-col gap-2">
         <button
           onClick={() => filterStatus("all")}
-          className="text-left text-white bg-slate-700 p-2 rounded-lg">
+          className="text-left bg-gray-200 dark:bg-slate-700 text-black dark:text-white p-2 rounded-lg">
           All Tasks ({todos.length})
         </button>
 
         <button
           onClick={() => filterStatus("completed")}
-          className="text-left text-green-400 bg-slate-700 p-2 rounded-lg">
+          className="text-left bg-gray-200 dark:bg-slate-700 text-black dark:text-white p-2 rounded-lg">
           Completed ({completedCount})
         </button>
 
         <button
           onClick={() => filterStatus("pending")}
-          className="text-left text-yellow-400 bg-slate-700 p-2 rounded-lg">
+          className="text-left bg-gray-200 dark:bg-slate-700 text-black dark:text-white p-2 rounded-lg">
           Pending ({pendingCount})
         </button>
       </div>
@@ -58,15 +63,22 @@ export default function Sidebar({
           {allTags.map((tag, index) => (
             <span
               key={`${tag}-${index}`}
-              className="px-2 py-1 bg-slate-700 rounded-lg text-sm text-blue-400">
+              // className="px-2 py-1 bg-slate-700 rounded-lg text-sm text-blue-400">
+              className="px-2 py-1 bg-gray-200 dark:bg-slate-700  dark:text-blue-400  rounded-lg text-sm text-blue-400">
               #{tag}
             </span>
           ))}
         </div>
       </div>
       <button
+        onClick={() => setDarkMode(!darkMode)}
+        className="text-center text-black dark:text-white bg-gray-200 dark:bg-slate-700 p-2 rounded-lg">
+        {" "}
+        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+      </button>
+      <button
         onClick={refresh}
-        className="mt-[185px] bg-slate-700 p-2 rounded-lg text-white">
+        className="mt-[185px]  p-2 rounded-lg bg-gray-200 dark:bg-slate-700 text-black dark:text-white">
         Refresh
       </button>
     </div>
