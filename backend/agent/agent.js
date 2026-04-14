@@ -91,22 +91,22 @@ const tools = [
       },
     },
   },
-  {
-    type: "function",
-    function: {
-      name: "update_todo",
-      description: "Update todo by id or title",
-      parameters: {
-        type: "object",
-        properties: {
-          id: { type: "string" },
-          title: { type: "string" },
-          updates: { type: "object" },
-        },
-        required: ["id", "updates"],
-      },
-    },
-  },
+  // {
+  //   type: "function",
+  //   function: {
+  //     name: "update_todo",
+  //     description: "Update todo by id or title",
+  //     parameters: {
+  //       type: "object",
+  //       properties: {
+  //         id: { type: "string" },
+  //         title: { type: "string" },
+  //         updates: { type: "object" },
+  //       },
+  //       required: ["id", "updates"],
+  //     },
+  //   },
+  // },
   {
     type: "function",
     function: {

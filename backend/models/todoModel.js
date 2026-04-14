@@ -5,7 +5,7 @@ const TodoSchema = new mongoose.Schema({
   description: String,
   completed: { type: Boolean, default: false },
   dueDate: Date,
-  tags: { type: [String], default: [] }, // 🔥 add this (used in your tools)
+  tags: { type: [String], default: [] },
 });
 
 export const TodoModel = mongoose.model("Todo", TodoSchema);
