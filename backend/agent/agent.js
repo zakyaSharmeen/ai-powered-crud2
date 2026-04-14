@@ -81,7 +81,10 @@ const tools = [
     type: "function",
     function: {
       name: "count_todos",
-      description: "Count todos",
+      // description: "Count todos",
+      description:
+        "Count todos. Use status='pending' for tasks left or incomplete tasks. Use status='completed' for done tasks.",
+
       parameters: {
         type: "object",
         properties: {
@@ -224,7 +227,18 @@ Else → use title search
   - "✏️ Task updated successfully"
   - "📋 Here are your tasks" (for search)
 
+SMART UNDERSTANDING for STATUS:
+- "tasks left" → status = pending
+- "remaining tasks" → status = pending
+- "incomplete tasks" → status = pending
+- "done tasks" → status = completed
+- "finished tasks" → status = completed
 
+
+If count_todos returns a number:
+- Always respond like:
+  "You have X pending tasks"
+- Never return empty response
       `,
     },
     {
