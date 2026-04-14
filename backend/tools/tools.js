@@ -4,25 +4,91 @@ import { TodoModel } from "../models/todoModel.js";
 // CREATE---------------
 
 //title, description, filtering
+// const smartParse = (title, description = "") => {
+//   const text = (title + " " + description).toLowerCase();
+
+//   let dueDate = null;
+//   let tags = [];
+
+//   // 🏷️ AUTO TAGGING (UNCHANGED)
+//   const tagRules = [
+//     {
+//       tag: "grocery",
+//       keywords: ["buy", "purchase", "shop", "grocery", "milk", "vegetables"],
+//     },
+//     {
+//       tag: "fitness",
+//       keywords: ["run", "walk", "gym", "exercise", "workout"],
+//     },
+//     {
+//       tag: "work",
+//       keywords: ["meeting", "office", "project", "email"],
+//     },
+//   ];
+
+//   tagRules.forEach((rule) => {
+//     if (rule.keywords.some((word) => text.includes(word))) {
+//       tags.push(rule.tag);
+//     }
+//   });
+
+//   const now = new Date();
+
+//   // 🗓️ DATE
+//   if (text.includes("tomorrow")) {
+//     dueDate = new Date();
+//     dueDate.setDate(now.getDate() + 1);
+//   }
+
+//   if (text.includes("today")) {
+//     dueDate = new Date();
+//   }
+
+//   // ⏰ DEFAULT TIME (if date exists)
+//   if (dueDate) {
+//     dueDate.setHours(9, 0, 0, 0); // default 9 AM
+//   }
+
+//   // ⏰ TIME WORDS
+//   if (text.includes("morning")) dueDate?.setHours(8, 0, 0, 0);
+//   if (text.includes("evening")) dueDate?.setHours(18, 0, 0, 0);
+//   if (text.includes("night")) dueDate?.setHours(21, 0, 0, 0);
+
+//   // ⏰ EXACT TIME (9pm, 7am)
+//   const match = text.match(/(\d{1,2})(am|pm)/);
+//   if (match && dueDate) {
+//     let hour = parseInt(match[1]);
+
+//     if (match[2] === "pm" && hour !== 12) hour += 12;
+//     if (match[2] === "am" && hour === 12) hour = 0;
+
+//     dueDate.setHours(hour, 0, 0, 0);
+//   }
+
+//   return { dueDate, tags };
+// };
+
 const smartParse = (title, description = "") => {
   const text = (title + " " + description).toLowerCase();
 
   let dueDate = null;
   let tags = [];
 
-  // 🏷️ AUTO TAGGING (UNCHANGED)
+  const now = new Date();
+
+  // 🏷️ TAGS
   const tagRules = [
     {
       tag: "grocery",
-      keywords: ["buy", "purchase", "shop", "grocery", "milk", "vegetables"],
+      keywords: ["buy", "milk", "vegetables", "shop"],
     },
     {
       tag: "fitness",
-      keywords: ["run", "walk", "gym", "exercise", "workout"],
+      keywords: ["gym", "run", "workout"],
     },
     {
       tag: "work",
-      keywords: ["meeting", "office", "project", "email"],
+      keywords: ["meeting", "project", "office"],
     },
   ];
 
@@ -32,21 +98,34 @@ const smartParse = (title, description = "") => {
     }
   });
 
-  const now = new Date();
+  // 📅 TODAY
+  if (text.includes("today")) {
+    dueDate = new Date(now);
+  }
 
-  // 🗓️ DATE
+  // 📅 TOMORROW
   if (text.includes("tomorrow")) {
-    dueDate = new Date();
+    dueDate = new Date(now);
     dueDate.setDate(now.getDate() + 1);
   }
 
-  if (text.includes("today")) {
-    dueDate = new Date();
+  // 📅 NEXT WEEK
+  if (text.includes("next week")) {
+    dueDate = new Date(now);
+    dueDate.setDate(now.getDate() + 7);
   }
 
-  // ⏰ DEFAULT TIME (if date exists)
+  // 📅 AFTER X DAYS
+  const daysMatch = text.match(/after (\d+) days?/);
+  if (daysMatch) {
+    const days = parseInt(daysMatch[1]);
+    dueDate = new Date(now);
+    dueDate.setDate(now.getDate() + days);
+  }
+
+  // ⏰ DEFAULT TIME
   if (dueDate) {
-    dueDate.setHours(9, 0, 0, 0); // default 9 AM
+    dueDate.setHours(9, 0, 0, 0);
   }
 
   // ⏰ TIME WORDS
