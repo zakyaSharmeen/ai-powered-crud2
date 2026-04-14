@@ -39,19 +39,19 @@ export default function Sidebar({
       <div className="flex flex-col gap-2">
         <button
           onClick={() => filterStatus("all")}
-          className="text-left bg-gray-200 dark:bg-slate-700 text-black dark:text-white p-2 rounded-lg">
+          className="text-left bg-gray-200 dark:bg-slate-700 text-black dark:text-white p-2 rounded-lg cursor-pointer">
           All Tasks ({todos.length})
         </button>
 
         <button
           onClick={() => filterStatus("completed")}
-          className="text-left bg-gray-200 dark:bg-slate-700 text-black dark:text-white p-2 rounded-lg">
+          className="text-left bg-gray-200 dark:bg-slate-700 text-black dark:text-white p-2 rounded-lg cursor-pointer">
           Completed ({completedCount})
         </button>
 
         <button
           onClick={() => filterStatus("pending")}
-          className="text-left bg-gray-200 dark:bg-slate-700 text-black dark:text-white p-2 rounded-lg">
+          className="text-left bg-gray-200 dark:bg-slate-700 text-black dark:text-white p-2 rounded-lg cursor-pointer">
           Pending ({pendingCount})
         </button>
       </div>
@@ -72,13 +72,13 @@ export default function Sidebar({
       </div>
       <button
         onClick={() => setDarkMode(!darkMode)}
-        className="text-center text-black dark:text-white bg-gray-200 dark:bg-slate-700 p-2 rounded-lg">
+        className="text-center text-black dark:text-white bg-gray-200 dark:bg-slate-700 p-2 rounded-lg cursor-pointer">
         {" "}
         {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
       </button>
       <button
         onClick={refresh}
-        className="mt-[185px]  p-2 rounded-lg bg-gray-200 dark:bg-slate-700 text-black dark:text-white">
+        className="mt-[185px]  p-2 rounded-lg bg-gray-200 dark:bg-slate-700 text-black dark:text-white cursor-pointer">
         Refresh
       </button>
     </div>

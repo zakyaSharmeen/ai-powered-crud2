@@ -28,7 +28,7 @@ export default function DateFilter({ onFilter }: Props) {
 
       <button
         onClick={() => onFilter(startDate, endDate)}
-        className="bg-blue-400 px-4 py-2 rounded">
+        className="bg-blue-400 px-4 py-2 rounded cursor-pointer">
         Filter
       </button>
     </div>

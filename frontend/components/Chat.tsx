@@ -64,7 +64,9 @@ export default function Chat({ setTodos }: Props) {
           className="flex-1 p-2 rounded-lg bg-gray-200 dark:bg-slate-700 text-black dark:text-white"
           placeholder="Ask AI..."
         />
-        <button onClick={handleSend} className="bg-green-500 px-4 rounded-lg">
+        <button
+          onClick={handleSend}
+          className="bg-green-500 px-4 rounded-lg cursor-pointer">
           Send
         </button>
       </div>

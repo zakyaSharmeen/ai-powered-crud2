@@ -33,7 +33,7 @@ export default function TodoList({ todos, refresh }: Props) {
                   });
                   refresh();
                 }}
-                className="bg-blue-500 px-2 rounded">
+                className="bg-blue-500 px-2 rounded cursor-pointer">
                 {todo.completed ? "Undo" : "Done"}
               </button>
               <button
@@ -41,7 +41,7 @@ export default function TodoList({ todos, refresh }: Props) {
                   await deleteTodo(todo._id);
                   refresh();
                 }}
-                className="bg-red-500 px-2 rounded">
+                className="bg-red-500 px-2 rounded cursor-pointer">
                 Delete
               </button>
             </div>
