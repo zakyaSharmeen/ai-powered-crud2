@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://ai-powered-crud2.onrender.com";
 
 export const sendChat = async (message: string) => {
   const res = await fetch(`${BASE_URL}/chat`, {
