@@ -218,6 +218,26 @@ export const searchTodo = async ({ query, status, tag }) => {
   if (query) {
     filter.title = { $regex: query, $options: "i" };
   }
+  if (query && query.toLowerCase().includes("today")) {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+
+    filter.dueDate = { $gte: start, $lte: end };
+  }
+  if (query && query.toLowerCase().includes("tomorrow")) {
+    const start = new Date();
+    start.setDate(start.getDate() + 1);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setDate(end.getDate() + 1);
+    end.setHours(23, 59, 59, 999);
+
+    filter.dueDate = { $gte: start, $lte: end };
+  }
 
   const todos = await TodoModel.find(filter);
 
