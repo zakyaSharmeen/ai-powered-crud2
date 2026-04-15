@@ -61,21 +61,37 @@ export default function App() {
     }
   };
 
+  // const filterByDate = async (start: string, end: string) => {
+  //   // const BASE_URL = "https://ai-powered-crud2.onrender.com";
+
+  //   // let url = "http://localhost:5000/todos?";
+  //   let url = `${BASE_URL}/todos?`;
+
+  //   if (start) url += `startDate=${start}&`;
+  //   if (end) url += `endDate=${end}`;
+  //   console.log("START:", start, "END:", end);
+
+  //   const res = await fetch(url);
+  //   const data = await res.json();
+  //   setTodos(data);
+  // };
+
   const filterByDate = async (start: string, end: string) => {
-    // const BASE_URL = "https://ai-powered-crud2.onrender.com";
+    const BASE_URL = "https://ai-powered-crud2.onrender.com";
 
-    // let url = "http://localhost:5000/todos?";
-    let url = `${BASE_URL}/todos?`;
+    const params = new URLSearchParams();
 
-    if (start) url += `startDate=${start}&`;
-    if (end) url += `endDate=${end}`;
-    console.log("START:", start, "END:", end);
+    if (start) params.append("startDate", start);
+    if (end) params.append("endDate", end);
+
+    const url = `${BASE_URL}/todos?${params.toString()}`;
+
+    console.log("FINAL URL:", url);
 
     const res = await fetch(url);
     const data = await res.json();
     setTodos(data);
   };
-
   useEffect(() => {
     loadTodos();
   }, []);
