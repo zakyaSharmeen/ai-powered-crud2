@@ -201,6 +201,42 @@ export const createTodo = async ({ title, description }) => {
 };
 ///////////////////////////////////////////////////////////
 
+// export const searchTodo = async ({
+//   query,
+//   status,
+//   tag,
+//   dueDateFrom,
+//   dueDateTo,
+// }) => {
+//   console.log("🔍 TOOL CALLED: search_todo");
+//   console.log("📥 Input:", { query, status, tag });
+
+//   const filter = {};
+//   if (dueDateFrom && dueDateTo) {
+//     filter.dueDate = {
+//       $gte: new Date(dueDateFrom),
+//       $lte: new Date(dueDateTo),
+//     };
+//   }
+
+//   // ✅ status filter
+//   if (status === "completed") filter.completed = true;
+//   if (status === "pending") filter.completed = false;
+
+//   // ✅ tag filter
+//   if (tag) filter.tags = { $in: [tag] };
+
+//   // ✅ text search
+//   if (query) {
+//     filter.title = { $regex: query, $options: "i" };
+//   }
+
+//   const todos = await TodoModel.find(filter);
+
+//   console.log("📋 Result:", todos);
+
+//   return todos;
+// };
 export const searchTodo = async ({
   query,
   status,
@@ -209,9 +245,22 @@ export const searchTodo = async ({
   dueDateTo,
 }) => {
   console.log("🔍 TOOL CALLED: search_todo");
-  console.log("📥 Input:", { query, status, tag });
 
   const filter = {};
+
+  // status
+  if (status === "completed") filter.completed = true;
+  if (status === "pending") filter.completed = false;
+
+  // tag
+  if (tag) filter.tags = { $in: [tag] };
+
+  // text search
+  if (query) {
+    filter.title = { $regex: query, $options: "i" };
+  }
+
+  //  ADD THIS (DATE FILTER)
   if (dueDateFrom && dueDateTo) {
     filter.dueDate = {
       $gte: new Date(dueDateFrom),
@@ -219,21 +268,7 @@ export const searchTodo = async ({
     };
   }
 
-  // ✅ status filter
-  if (status === "completed") filter.completed = true;
-  if (status === "pending") filter.completed = false;
-
-  // ✅ tag filter
-  if (tag) filter.tags = { $in: [tag] };
-
-  // ✅ text search
-  if (query) {
-    filter.title = { $regex: query, $options: "i" };
-  }
-
   const todos = await TodoModel.find(filter);
-
-  console.log("📋 Result:", todos);
 
   return todos;
 };
