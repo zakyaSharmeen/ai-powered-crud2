@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   const { status, tag, startDate, endDate, search } = req.query;
-
+  console.log("QUERY:", req.query);
   const filter = {};
 
   // ✅ STATUS FILTER
