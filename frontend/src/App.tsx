@@ -143,7 +143,7 @@ export default function App() {
 
             {/* Todo List (50% + scroll) */}
             <div className="flex-1 p-4 overflow-y-auto scroll-smooth">
-              <TodoList todos={todos} refresh={loadTodos} />
+              <TodoList todos={todos} refresh={loadTodos} setTodos={setTodos} />
             </div>
           </div>
         </div>
