@@ -79,23 +79,51 @@ const router = express.Router();
 //     });
 //   }
 // });
+// router.post("/", async (req, res) => {
+//   try {
+//     const { message } = req.body;
+
+//     if (!message || typeof message !== "string") {
+//       console.log("📩 Incoming message:", message, typeof message);
+//       return res.status(400).json({ error: "Message must be string" });
+//     }
+
+//     const reply = await runAgent(message);
+//     const todos = await TodoModel.find();
+
+//     res.json({ reply, todos });
+//   } catch (err) {
+//     console.error("❌ FULL ERROR:", err);
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+// export default router;
 router.post("/", async (req, res) => {
   try {
     const { message } = req.body;
 
     if (!message || typeof message !== "string") {
-      console.log("📩 Incoming message:", message, typeof message);
       return res.status(400).json({ error: "Message must be string" });
     }
 
-    const reply = await runAgent(message);
+    let reply;
+
+    try {
+      reply = await runAgent(message);
+    } catch (err) {
+      console.error("❌ AGENT ERROR:", err.message);
+      reply = { reply: "⚠️ Something went wrong in AI" }; // fallback
+    }
+
     const todos = await TodoModel.find();
 
-    res.json({ reply, todos });
+    res.json({
+      reply: reply?.reply || reply || "No reply",
+      todos: todos || [],
+    });
   } catch (err) {
     console.error("❌ FULL ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
-
-export default router;

@@ -94,22 +94,7 @@ const tools = [
       },
     },
   },
-  // {
-  //   type: "function",
-  //   function: {
-  //     name: "update_todo",
-  //     description: "Update todo by id or title",
-  //     parameters: {
-  //       type: "object",
-  //       properties: {
-  //         id: { type: "string" },
-  //         title: { type: "string" },
-  //         updates: { type: "object" },
-  //       },
-  //       required: ["id", "updates"],
-  //     },
-  //   },
-  // },
+
   {
     type: "function",
     function: {
@@ -151,13 +136,14 @@ const tools = [
 ];
 
 export const runAgent = async (userMessage) => {
-  const MAX_STEPS = 8;
-  let step = 0;
+  try {
+    const MAX_STEPS = 8;
+    let step = 0;
 
-  let messages = [
-    {
-      role: "system",
-      content: `
+    let messages = [
+      {
+        role: "system",
+        content: `
 You are a smart TODO assistant.
 
 RULES:
@@ -258,77 +244,150 @@ NEVER manually sort tasks in response.
 ALWAYS ask tools for filtered data.
 
       `,
-    },
-    {
-      role: "user",
-      content: userMessage,
-    },
-  ];
-
-  while (step < MAX_STEPS) {
-    step++;
-
-    const response = await axios.post(
-      OPENROUTER_URL,
-      {
-        model: "moonshotai/kimi-k2.5",
-        messages,
-        stream: true,
-
-        tools,
-        tool_choice: "auto",
       },
       {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
+        role: "user",
+        content: userMessage,
+      },
+    ];
+
+    // while (step < MAX_STEPS) {
+    //   step++;
+
+    //   const response = await axios.post(
+    //     OPENROUTER_URL,
+    //     {
+    //       model: "moonshotai/kimi-k2.5",
+    //       messages,
+
+    //       tools,
+    //       tool_choice: "auto",
+    //     },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+    //         "Content-Type": "application/json",
+    //       },
+    //     },
+    //   );
+
+    //   const message = response.data.choices[0].message;
+
+    //   console.log("🧠 AI:", message);
+
+    //   // ✅ FINAL ANSWER
+    //   if (!message.tool_calls) {
+    //     return { reply: message.content };
+    //   }
+
+    //   messages.push(message);
+
+    //   // ✅ RUN ALL TOOLS IN PARALLEL
+    //   const toolResults = await Promise.all(
+    //     message.tool_calls.map(async (toolCall) => {
+    //       const name = toolCall.function.name;
+    //       const args = JSON.parse(toolCall.function.arguments || "{}");
+
+    //       let result;
+
+    //       if (name === "create_todo") result = await createTodo(args);
+    //       else if (name === "search_todo") result = await searchTodo(args);
+    //       else if (name === "update_todo") result = await updateTodo(args);
+    //       else if (name === "delete_todo") result = await deleteTodo(args);
+    //       else if (name === "count_todos") result = await countTodos(args);
+
+    //       return {
+    //         tool_call_id: toolCall.id,
+    //         result,
+    //       };
+    //     }),
+    //   );
+
+    //   // ✅ SEND TOOL RESULTS BACK
+    //   for (const t of toolResults) {
+    //     messages.push({
+    //       role: "tool",
+    //       tool_call_id: t.tool_call_id,
+    //       content: JSON.stringify(t.result),
+    //     });
+    //   }
+    // }
+
+    // return {
+    //   reply: "Stopped: too many reasoning steps",
+    // };
+
+    while (step < MAX_STEPS) {
+      step++;
+
+      const response = await axios.post(
+        OPENROUTER_URL,
+        {
+          model: "moonshotai/kimi-k2.5",
+          messages,
+          tools,
+          tool_choice: "auto",
         },
-      },
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
 
-    const message = response.data.choices[0].message;
+      const message = response.data.choices[0].message;
 
-    console.log("🧠 AI:", message);
+      console.log("🧠 AI:", message);
 
-    // ✅ FINAL ANSWER
-    if (!message.tool_calls) {
-      return { reply: message.content };
-    }
-
-    messages.push(message);
-
-    // ✅ RUN ALL TOOLS IN PARALLEL
-    const toolResults = await Promise.all(
-      message.tool_calls.map(async (toolCall) => {
-        const name = toolCall.function.name;
-        const args = JSON.parse(toolCall.function.arguments || "{}");
-
-        let result;
-
-        if (name === "create_todo") result = await createTodo(args);
-        else if (name === "search_todo") result = await searchTodo(args);
-        else if (name === "update_todo") result = await updateTodo(args);
-        else if (name === "delete_todo") result = await deleteTodo(args);
-        else if (name === "count_todos") result = await countTodos(args);
-
+      // ✅ FINAL RESPONSE
+      if (!message.tool_calls) {
         return {
-          tool_call_id: toolCall.id,
-          result,
+          reply: message.content || "No response",
         };
-      }),
-    );
+      }
 
-    // ✅ SEND TOOL RESULTS BACK
-    for (const t of toolResults) {
-      messages.push({
-        role: "tool",
-        tool_call_id: t.tool_call_id,
-        content: JSON.stringify(t.result),
-      });
+      messages.push(message);
+
+      // ✅ RUN TOOLS
+      const toolResults = await Promise.all(
+        message.tool_calls.map(async (toolCall) => {
+          const name = toolCall.function.name;
+          const args = JSON.parse(toolCall.function.arguments || "{}");
+
+          let result;
+
+          if (name === "create_todo") result = await createTodo(args);
+          else if (name === "search_todo") result = await searchTodo(args);
+          else if (name === "update_todo") result = await updateTodo(args);
+          else if (name === "delete_todo") result = await deleteTodo(args);
+          else if (name === "count_todos") result = await countTodos(args);
+
+          return {
+            tool_call_id: toolCall.id,
+            result,
+          };
+        }),
+      );
+
+      // ✅ SEND BACK TOOL RESULTS
+      for (const t of toolResults) {
+        messages.push({
+          role: "tool",
+          tool_call_id: t.tool_call_id,
+          content: JSON.stringify(t.result),
+        });
+      }
     }
-  }
 
-  return {
-    reply: "Stopped: too many reasoning steps",
-  };
+    return {
+      reply: "Too many steps",
+    };
+  } catch (err) {
+    console.error("❌ AGENT ERROR:", err.message);
+
+    return {
+      reply: "Something went wrong, try again",
+    };
+  }
 };
