@@ -73,6 +73,8 @@ const tools = [
           query: { type: "string" },
           status: { type: "string" },
           tag: { type: "string" },
+          dueDateFrom: { type: "string" },
+          dueDateTo: { type: "string" },
         },
       },
     },
