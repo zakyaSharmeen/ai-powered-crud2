@@ -36,17 +36,29 @@ export default function App() {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
+  // const loadTodos = async () => {
+  //   setLoading(true);
+  //   console.log("Refreshing...");
+
+  //   const data = await fetchTodos();
+
+  //   // smooth UX delay
+  //   setTimeout(() => {
+  //     setTodos(data);
+  //     setLoading(false);
+  //   }, 500);
+  // };
   const loadTodos = async () => {
     setLoading(true);
-    console.log("Refreshing...");
 
-    const data = await fetchTodos();
-
-    // smooth UX delay
-    setTimeout(() => {
+    try {
+      const data = await fetchTodos();
       setTodos(data);
+    } catch (err) {
+      console.error("Failed to load todos", err);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   const filterByDate = async (start: string, end: string) => {
@@ -57,6 +69,7 @@ export default function App() {
 
     if (start) url += `startDate=${start}&`;
     if (end) url += `endDate=${end}`;
+    console.log("START:", start, "END:", end);
 
     const res = await fetch(url);
     const data = await res.json();
