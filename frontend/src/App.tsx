@@ -6,7 +6,7 @@ import TodoList from "../components/TodoList.tsx";
 
 // import { Todo } from "./type/index";
 import { fetchTodos } from "../services/api.ts";
-
+const BASE_URL = "https://ai-powered-crud2.onrender.com";
 export interface Todo {
   _id: string;
   title: string;
@@ -50,7 +50,7 @@ export default function App() {
   };
 
   const filterByDate = async (start: string, end: string) => {
-    const BASE_URL = "https://ai-powered-crud2.onrender.com";
+    // const BASE_URL = "https://ai-powered-crud2.onrender.com";
 
     // let url = "http://localhost:5000/todos?";
     let url = `${BASE_URL}/todos?`;
@@ -94,7 +94,8 @@ export default function App() {
               filterStatus={(status) => {
                 if (status === "all") loadTodos();
                 else {
-                  fetch(`http://localhost:5000/todos?status=${status}`)
+                  // fetch(`http://localhost:5000/todos?status=${status}`)
+                  fetch(`${BASE_URL}/todos?status=${status}`)
                     .then((res) => res.json())
                     .then(setTodos);
                 }
