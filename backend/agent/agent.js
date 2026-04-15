@@ -229,18 +229,9 @@ If count_todos returns a number:
 - Never return empty response
 
 SMART DATE UNDERSTANDING:
-IMPORTANT:
-If user asks:
-- today tasks
-- tomorrow tasks
-- next week tasks
-
-YOU MUST NOT return all tasks.
-
-You must use search_todo with proper filtering:
-- today → filter by today's date range
-- tomorrow → tomorrow's date range
-- next week → 7 day range
+If user says "today", "tomorrow", or "next week":
+ALWAYS call search_todo with query = original user message
+DO NOT skip tool
 
 NEVER manually sort tasks in response.
 ALWAYS ask tools for filtered data.

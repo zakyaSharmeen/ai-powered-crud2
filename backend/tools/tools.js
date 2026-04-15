@@ -246,72 +246,52 @@ export const createTodo = async ({ title, description }) => {
 //   return todos;
 // };
 export const searchTodo = async (args = {}) => {
-  const { query, status, tag, dueDateFrom, dueDateTo } = args;
-
-  console.log("🔍 TOOL CALLED: search_todo");
-  console.log("📥 Input:", args);
+  const { query, status, tag } = args;
 
   const filter = {};
 
-  // ✅ status
+  // ✅ STATUS
   if (status === "completed") filter.completed = true;
   if (status === "pending") filter.completed = false;
 
-  // ✅ tag
+  // ✅ TAG
   if (tag) filter.tags = { $in: [tag] };
 
-  // ✅ text search
-  if (query) {
+  let isDateQuery = false;
+
+  // 🔥 DATE LOGIC
+  if (query?.toLowerCase().includes("today")) {
+    isDateQuery = true;
+
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+
+    filter.dueDate = { $gte: start, $lte: end };
+  }
+
+  if (query?.toLowerCase().includes("tomorrow")) {
+    isDateQuery = true;
+
+    const start = new Date();
+    start.setDate(start.getDate() + 1);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setDate(end.getDate() + 1);
+    end.setHours(23, 59, 59, 999);
+
+    filter.dueDate = { $gte: start, $lte: end };
+  }
+
+  // ✅ ONLY apply title search if NOT date query
+  if (query && !isDateQuery) {
     filter.title = { $regex: query, $options: "i" };
   }
 
-  // 🔥 PRIORITY 1: UI DATE FILTER (sidebar)
-  if (dueDateFrom || dueDateTo) {
-    filter.dueDate = {};
-
-    if (dueDateFrom) {
-      const start = new Date(dueDateFrom);
-      start.setHours(0, 0, 0, 0);
-      filter.dueDate.$gte = start;
-    }
-
-    if (dueDateTo) {
-      const end = new Date(dueDateTo);
-      end.setHours(23, 59, 59, 999);
-      filter.dueDate.$lte = end;
-    }
-  }
-
-  // 🔥 PRIORITY 2: CHAT LOGIC (only if no UI filter)
-  else if (query) {
-    const text = query.toLowerCase();
-
-    if (text.includes("today")) {
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
-
-      const end = new Date();
-      end.setHours(23, 59, 59, 999);
-
-      filter.dueDate = { $gte: start, $lte: end };
-    }
-
-    if (text.includes("tomorrow")) {
-      const start = new Date();
-      start.setDate(start.getDate() + 1);
-      start.setHours(0, 0, 0, 0);
-
-      const end = new Date();
-      end.setDate(end.getDate() + 1);
-      end.setHours(23, 59, 59, 999);
-
-      filter.dueDate = { $gte: start, $lte: end };
-    }
-  }
-
   const todos = await TodoModel.find(filter);
-
-  console.log("📋 Result:", todos);
 
   return todos;
 };
