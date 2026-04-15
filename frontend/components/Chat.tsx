@@ -35,7 +35,9 @@ export default function Chat({ setTodos }: Props) {
       { role: "assistant", text: data.reply.reply || data.reply },
     ]);
 
-    setTodos(data.todos);
+    // setTodos(data.todos);
+    setTodos(data?.todos || []);
+
     setMessage("");
   };
 
