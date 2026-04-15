@@ -201,77 +201,31 @@ export const createTodo = async ({ title, description }) => {
 };
 ///////////////////////////////////////////////////////////
 
-// export const searchTodo = async ({
-//   query,
-//   status,
-//   tag,
-//   dueDateFrom,
-//   dueDateTo,
-// }) => {
-//   console.log("🔍 TOOL CALLED: search_todo");
-//   console.log("📥 Input:", { query, status, tag });
-
-//   const filter = {};
-//   if (dueDateFrom && dueDateTo) {
-//     filter.dueDate = {
-//       $gte: new Date(dueDateFrom),
-//       $lte: new Date(dueDateTo),
-//     };
-//   }
-
-//   // ✅ status filter
-//   if (status === "completed") filter.completed = true;
-//   if (status === "pending") filter.completed = false;
-
-//   // ✅ tag filter
-//   if (tag) filter.tags = { $in: [tag] };
-
-//   // ✅ text search
-//   if (query) {
-//     filter.title = { $regex: query, $options: "i" };
-//   }
-
-//   const todos = await TodoModel.find(filter);
-
-//   console.log("📋 Result:", todos);
-
-//   return todos;
-// };
-export const searchTodo = async ({
-  query,
-  status,
-  tag,
-  dueDateFrom,
-  dueDateTo,
-}) => {
+export const searchTodo = async ({ query, status, tag }) => {
   console.log("🔍 TOOL CALLED: search_todo");
+  console.log("📥 Input:", { query, status, tag });
 
   const filter = {};
 
-  // status
+  // ✅ status filter
   if (status === "completed") filter.completed = true;
   if (status === "pending") filter.completed = false;
 
-  // tag
+  // ✅ tag filter
   if (tag) filter.tags = { $in: [tag] };
 
-  // text search
+  // ✅ text search
   if (query) {
     filter.title = { $regex: query, $options: "i" };
   }
 
-  //  ADD THIS (DATE FILTER)
-  if (dueDateFrom && dueDateTo) {
-    filter.dueDate = {
-      $gte: new Date(dueDateFrom),
-      $lte: new Date(dueDateTo),
-    };
-  }
-
   const todos = await TodoModel.find(filter);
+
+  console.log("📋 Result:", todos);
 
   return todos;
 };
+
 //counting same type of tasks
 export const countTodos = async ({ status, tag }) => {
   console.log("📊 TOOL CALLED: count_todos");
