@@ -276,7 +276,7 @@ export const createTodo = async ({ title, description }) => {
 //   return todos;
 // };
 export const searchTodo = async (args = {}) => {
-  const { query, status, tag, dueDateFrom, dueDateTo } = args;
+  const { query, status, tag } = args;
 
   console.log("🔍 TOOL CALLED: search_todo");
   console.log("📥 Input:", args);
@@ -296,21 +296,6 @@ export const searchTodo = async (args = {}) => {
   }
 
   // 🔥 PRIORITY 1: UI DATE FILTER (sidebar)
-  if (dueDateFrom || dueDateTo) {
-    filter.dueDate = {};
-
-    if (dueDateFrom) {
-      const start = new Date(dueDateFrom);
-      start.setHours(0, 0, 0, 0);
-      filter.dueDate.$gte = start;
-    }
-
-    if (dueDateTo) {
-      const end = new Date(dueDateTo);
-      end.setHours(23, 59, 59, 999);
-      filter.dueDate.$lte = end;
-    }
-  }
 
   // 🔥 PRIORITY 2: CHAT LOGIC (only if no UI filter)
   else if (query) {
