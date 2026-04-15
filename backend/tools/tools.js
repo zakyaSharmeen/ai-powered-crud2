@@ -201,30 +201,30 @@ export const createTodo = async ({ title, description }) => {
 };
 ///////////////////////////////////////////////////////////
 
-// export const searchTodo = async ({ query, status, tag }) => {
-//   console.log("🔍 TOOL CALLED: search_todo");
-//   console.log("📥 Input:", { query, status, tag });
+export const searchTodo = async ({ query, status, tag }) => {
+  console.log("🔍 TOOL CALLED: search_todo");
+  console.log("📥 Input:", { query, status, tag });
 
-//   const filter = {};
+  const filter = {};
 
-//   // ✅ status filter
-//   if (status === "completed") filter.completed = true;
-//   if (status === "pending") filter.completed = false;
+  // ✅ status filter
+  if (status === "completed") filter.completed = true;
+  if (status === "pending") filter.completed = false;
 
-//   // ✅ tag filter
-//   if (tag) filter.tags = { $in: [tag] };
+  // ✅ tag filter
+  if (tag) filter.tags = { $in: [tag] };
 
-//   // ✅ text search
-//   if (query) {
-//     filter.title = { $regex: query, $options: "i" };
-//   }
+  // ✅ text search
+  if (query) {
+    filter.title = { $regex: query, $options: "i" };
+  }
 
-//   const todos = await TodoModel.find(filter);
+  const todos = await TodoModel.find(filter);
 
-//   console.log("📋 Result:", todos);
+  console.log("📋 Result:", todos);
 
-//   return todos;
-// };
+  return todos;
+};
 // export const searchTodo = async (args = {}) => {
 //   const { query, status, tag } = args;
 
@@ -275,63 +275,9 @@ export const createTodo = async ({ title, description }) => {
 
 //   return todos;
 // };
-export const searchTodo = async (args = {}) => {
-  const { query, status, tag } = args;
-
-  console.log("🔍 TOOL CALLED: search_todo");
-  console.log("📥 Input:", args);
-
-  const filter = {};
-
-  // ✅ status
-  if (status === "completed") filter.completed = true;
-  if (status === "pending") filter.completed = false;
-
-  // ✅ tag
-  if (tag) filter.tags = { $in: [tag] };
-
-  // ✅ text search
-  if (query) {
-    filter.title = { $regex: query, $options: "i" };
-  }
-
-  // 🔥 PRIORITY 1: UI DATE FILTER (sidebar)
-
-  // 🔥 PRIORITY 2: CHAT LOGIC (only if no UI filter)
-  else if (query) {
-    const text = query.toLowerCase();
-
-    if (text.includes("today")) {
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
-
-      const end = new Date();
-      end.setHours(23, 59, 59, 999);
-
-      filter.dueDate = { $gte: start, $lte: end };
-    }
-
-    if (text.includes("tomorrow")) {
-      const start = new Date();
-      start.setDate(start.getDate() + 1);
-      start.setHours(0, 0, 0, 0);
-
-      const end = new Date();
-      end.setDate(end.getDate() + 1);
-      end.setHours(23, 59, 59, 999);
-
-      filter.dueDate = { $gte: start, $lte: end };
-    }
-  }
-
-  const todos = await TodoModel.find(filter);
-
-  console.log("📋 Result:", todos);
-
-  return todos;
-};
 
 //counting same type of tasks
+
 export const countTodos = async ({ status, tag }) => {
   console.log("📊 TOOL CALLED: count_todos");
   console.log("📥 Input:", { status, tag });
