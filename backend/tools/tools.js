@@ -201,11 +201,23 @@ export const createTodo = async ({ title, description }) => {
 };
 ///////////////////////////////////////////////////////////
 
-export const searchTodo = async ({ query, status, tag }) => {
+export const searchTodo = async ({
+  query,
+  status,
+  tag,
+  dueDateFrom,
+  dueDateTo,
+}) => {
   console.log("🔍 TOOL CALLED: search_todo");
   console.log("📥 Input:", { query, status, tag });
 
   const filter = {};
+  if (dueDateFrom && dueDateTo) {
+    filter.dueDate = {
+      $gte: new Date(dueDateFrom),
+      $lte: new Date(dueDateTo),
+    };
+  }
 
   // ✅ status filter
   if (status === "completed") filter.completed = true;

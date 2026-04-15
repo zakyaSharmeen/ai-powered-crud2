@@ -73,6 +73,8 @@ const tools = [
           query: { type: "string" },
           status: { type: "string" },
           tag: { type: "string" },
+          dueDateFrom: { type: "string" },
+          dueDateTo: { type: "string" },
         },
       },
     },
@@ -239,6 +241,24 @@ If count_todos returns a number:
 - Always respond like:
   "You have X pending tasks"
 - Never return empty response
+
+SMART DATE UNDERSTANDING:
+IMPORTANT:
+If user asks:
+- today tasks
+- tomorrow tasks
+- next week tasks
+
+YOU MUST NOT return all tasks.
+
+You must use search_todo with proper filtering:
+- today → filter by today's date range
+- tomorrow → tomorrow's date range
+- next week → 7 day range
+
+NEVER manually sort tasks in response.
+ALWAYS ask tools for filtered data.
+
       `,
     },
     {
@@ -255,6 +275,8 @@ If count_todos returns a number:
       {
         model: "moonshotai/kimi-k2.5",
         messages,
+        stream: true,
+
         tools,
         tool_choice: "auto",
       },
