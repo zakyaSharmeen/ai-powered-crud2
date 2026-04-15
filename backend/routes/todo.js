@@ -43,19 +43,30 @@ router.get("/", async (req, res) => {
   //     filter.dueDate.$lte = end;
   //   }
   // }
+  // if (startDate || endDate) {
+  //   filter.dueDate = {};
+
+  //   if (startDate) {
+  //     const start = new Date(startDate);
+  //     start.setHours(0, 0, 0, 0);
+  //     filter.dueDate.$gte = start;
+  //   }
+
+  //   if (endDate) {
+  //     const end = new Date(endDate);
+  //     end.setHours(23, 59, 59, 999);
+  //     filter.dueDate.$lte = end;
+  //   }
+  // }
   if (startDate || endDate) {
     filter.dueDate = {};
 
     if (startDate) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-      filter.dueDate.$gte = start;
+      filter.dueDate.$gte = new Date(`${startDate}T00:00:00.000Z`);
     }
 
     if (endDate) {
-      const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999);
-      filter.dueDate.$lte = end;
+      filter.dueDate.$lte = new Date(`${endDate}T23:59:59.999Z`);
     }
   }
 
