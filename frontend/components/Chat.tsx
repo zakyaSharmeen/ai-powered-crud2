@@ -18,9 +18,10 @@ export interface ChatMessage {
 interface Props {
   // setTodos: (todos: Todo[]) => void;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  todos: Todo[];
 }
 
-export default function Chat({ setTodos }: Props) {
+export default function Chat({ setTodos, todos }: Props) {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState<ChatMessage[]>([]);
 
@@ -47,35 +48,66 @@ export default function Chat({ setTodos }: Props) {
 
     setChat((prev) => [...prev, { role: "user", text: message }]);
 
-    // ✅ AGENT LOGIC HERE
-    if (message.toLowerCase().startsWith("completed ")) {
-      const taskName = message.replace("completed ", "").trim().toLowerCase();
+    // // ✅ AGENT LOGIC HERE
+    // if (message.toLowerCase().startsWith("completed ")) {
+    //   const taskName = message.replace("completed ", "").trim().toLowerCase();
 
-      // ✅ get matching todos first
-      let matchedTodos: Todo[] = [];
+    //   // ✅ get matching todos first
+    //   let matchedTodos: Todo[] = [];
 
-      setTodos((prev) => {
-        matchedTodos = prev.filter((t) => t.title.toLowerCase() === taskName);
+    //   setTodos((prev) => {
+    //     matchedTodos = prev.filter((t) => t.title.toLowerCase() === taskName);
 
-        return prev.map((t) =>
-          t.title.toLowerCase() === taskName ? { ...t, completed: true } : t,
-        );
-      });
+    //     return prev.map((t) =>
+    //       t.title.toLowerCase() === taskName ? { ...t, completed: true } : t,
+    //     );
+    //   });
 
-      // ✅ update backend (agent)
-      await Promise.all(
-        matchedTodos.map((t) => updateTodo(t._id, { completed: true })),
+    //   // ✅ update backend (agent)
+    //   await Promise.all(
+    //     matchedTodos.map((t) => updateTodo(t._id, { completed: true })),
+    //   );
+
+    //   setChat((prev) => [
+    //     ...prev,
+    //     { role: "assistant", text: `Marked "${taskName}" as completed ✅` },
+    //   ]);
+
+    //   setMessage("");
+    //   return; // ⛔ STOP here (don’t call API)
+    // }
+
+    if (
+      message.toLowerCase().includes("completed") ||
+      message.toLowerCase().includes("mark")
+    ) {
+      const taskName = message
+        .toLowerCase()
+        .replace(/completed|mark|as|done/g, "")
+        .trim();
+
+      const task = todos.find((t) => t.title.toLowerCase().includes(taskName));
+
+      if (!task) return;
+
+      // ✅ THIS is the missing part in your system
+      await updateTodo(task._id, { completed: true });
+
+      setTodos((prev) =>
+        prev.map((t) => (t._id === task._id ? { ...t, completed: true } : t)),
       );
 
       setChat((prev) => [
         ...prev,
-        { role: "assistant", text: `Marked "${taskName}" as completed ✅` },
+        {
+          role: "assistant",
+          text: "Task marked as completed successfully.",
+        },
       ]);
 
       setMessage("");
-      return; // ⛔ STOP here (don’t call API)
+      return;
     }
-
     // 🔵 Normal AI flow
     const data = await sendChat(message);
 
