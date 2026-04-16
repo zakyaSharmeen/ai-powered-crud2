@@ -113,7 +113,7 @@ interface Props {
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
 }
 
-export default function TodoList({ todos, refresh, setTodos }: Props) {
+export default function TodoList({ todos, setTodos }: Props) {
   const safeTodos = todos || []; // ✅ ADD THIS
 
   return (
