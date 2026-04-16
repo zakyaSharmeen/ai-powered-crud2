@@ -1,6 +1,6 @@
 import { useState } from "react";
 // import { ChatMessage, Todo } from "../src/type/index.ts";
-import { sendChat } from "../services/api";
+import { sendChat, updateTodo } from "../services/api";
 
 export interface Todo {
   _id: string;
@@ -16,18 +16,67 @@ export interface ChatMessage {
 }
 
 interface Props {
-  setTodos: (todos: Todo[]) => void;
+  // setTodos: (todos: Todo[]) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
 }
 
 export default function Chat({ setTodos }: Props) {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState<ChatMessage[]>([]);
 
+  // const handleSend = async () => {
+  //   if (!message.trim()) return;
+
+  //   setChat((prev) => [...prev, { role: "user", text: message }]);
+
+  //   const data = await sendChat(message);
+
+  //   setChat((prev) => [
+  //     ...prev,
+  //     { role: "assistant", text: data.reply.reply || data.reply },
+  //   ]);
+
+  //   // setTodos(data.todos);
+  //   setTodos(data?.todos || []);
+
+  //   setMessage("");
+  // };
+
   const handleSend = async () => {
     if (!message.trim()) return;
 
     setChat((prev) => [...prev, { role: "user", text: message }]);
 
+    // ✅ AGENT LOGIC HERE
+    if (message.toLowerCase().startsWith("completed ")) {
+      const taskName = message.replace("completed ", "").trim().toLowerCase();
+
+      // ✅ get matching todos first
+      let matchedTodos: Todo[] = [];
+
+      setTodos((prev) => {
+        matchedTodos = prev.filter((t) => t.title.toLowerCase() === taskName);
+
+        return prev.map((t) =>
+          t.title.toLowerCase() === taskName ? { ...t, completed: true } : t,
+        );
+      });
+
+      // ✅ update backend (agent)
+      await Promise.all(
+        matchedTodos.map((t) => updateTodo(t._id, { completed: true })),
+      );
+
+      setChat((prev) => [
+        ...prev,
+        { role: "assistant", text: `Marked "${taskName}" as completed ✅` },
+      ]);
+
+      setMessage("");
+      return; // ⛔ STOP here (don’t call API)
+    }
+
+    // 🔵 Normal AI flow
     const data = await sendChat(message);
 
     setChat((prev) => [
@@ -35,12 +84,9 @@ export default function Chat({ setTodos }: Props) {
       { role: "assistant", text: data.reply.reply || data.reply },
     ]);
 
-    // setTodos(data.todos);
     setTodos(data?.todos || []);
-
     setMessage("");
   };
-
   return (
     <div className="bg-gray-100 dark:bg-slate-800 text-black dark:text-white h-full rounded-xl flex flex-col p-4">
       {" "}

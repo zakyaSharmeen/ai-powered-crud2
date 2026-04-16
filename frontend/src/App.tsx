@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar.tsx";
 import Chat from "../components/Chat.tsx";
 import TodoList from "../components/TodoList.tsx";
-// import DateFilter from "../components/DateFilter.tsx";
-
-// import { Todo } from "./type/index";
 import { fetchTodos } from "../services/api.ts";
+
 const BASE_URL = "https://ai-powered-crud2.onrender.com";
+
 export interface Todo {
   _id: string;
   title: string;
@@ -36,18 +35,7 @@ export default function App() {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
-  // const loadTodos = async () => {
-  //   setLoading(true);
-  //   console.log("Refreshing...");
 
-  //   const data = await fetchTodos();
-
-  //   // smooth UX delay
-  //   setTimeout(() => {
-  //     setTodos(data);
-  //     setLoading(false);
-  //   }, 500);
-  // };
   const loadTodos = async () => {
     setLoading(true);
 

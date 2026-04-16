@@ -104,6 +104,91 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 
+// import type { Todo } from "../components/Sidebar.tsx";
+// import { updateTodo, deleteTodo } from "../services/api";
+
+// interface Props {
+//   todos: Todo[];
+//   refresh: () => void;
+//   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+// }
+
+// export default function TodoList({ todos, setTodos }: Props) {
+//   const safeTodos = todos || []; // ✅ ADD THIS
+
+//   return (
+//     <div className="bg-gray-100 dark:bg-slate-800 p-4 rounded-2xl">
+//       <h2 className="text-gray-400 mb-4">Your Tasks</h2>
+
+//       <div className="space-y-3">
+//         {safeTodos.map(
+//           (
+//             todo, // ✅ FIX
+//           ) => (
+//             <div
+//               key={todo._id}
+//               className="p-4 bg-gray-200 dark:bg-slate-700 rounded-xl">
+//               <div>
+//                 <p className="font-medium">{todo.title}</p>
+//                 <p className="text-sm text-gray-400">{todo.tags?.join(", ")}</p>
+//               </div>
+
+//               <div className="flex gap-2">
+//                 {/* <button
+//                   onClick={async () => {
+//                     <button
+//                       onClick={async () => {
+//                         await updateTodo(todo._id, {
+//                           completed: !todo.completed,
+//                         });
+//                         refresh();
+//                       }}
+//                       className="bg-blue-500 px-2 rounded">
+//                       {todo.completed ? "Undo" : "Done"}
+//                     </button>;
+//                   }}
+//                   className="bg-blue-500 px-2 rounded">
+//                   {todo.completed ? "Undo" : "Done"}
+//                 </button> */}
+//                 <button
+//                   onClick={async () => {
+//                     await updateTodo(todo._id, {
+//                       completed: !todo.completed,
+//                     });
+
+//                     setTodos((prev) =>
+//                       prev.map((t) =>
+//                         t._id === todo._id
+//                           ? { ...t, completed: !t.completed }
+//                           : t,
+//                       ),
+//                     );
+
+//                     // optional:
+//                     // refresh();
+//                   }}
+//                   className="bg-blue-500 px-2 rounded">
+//                   {todo.completed ? "Undo" : "Done"}
+//                 </button>
+
+//                 <button
+//                   onClick={async () => {
+//                     await deleteTodo(todo._id);
+//                     setTodos((prev) => prev.filter((t) => t._id !== todo._id));
+//                     // refresh();
+//                   }}
+//                   className="bg-red-500 px-2 rounded">
+//                   Delete
+//                 </button>
+//               </div>
+//             </div>
+//           ),
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
 import type { Todo } from "../components/Sidebar.tsx";
 import { updateTodo, deleteTodo } from "../services/api";
 
@@ -114,76 +199,85 @@ interface Props {
 }
 
 export default function TodoList({ todos, setTodos }: Props) {
-  const safeTodos = todos || []; // ✅ ADD THIS
+  const safeTodos = todos || [];
+
+  const activeTodos = safeTodos.filter((t) => !t.completed);
+  const completedTodos = safeTodos.filter((t) => t.completed);
+
+  const toggleTodo = async (todo: Todo, value: boolean) => {
+    await updateTodo(todo._id, { completed: value });
+
+    setTodos((prev) =>
+      prev.map((t) => (t._id === todo._id ? { ...t, completed: value } : t)),
+    );
+  };
+
+  const removeTodo = async (todo: Todo) => {
+    await deleteTodo(todo._id);
+
+    setTodos((prev) => prev.filter((t) => t._id !== todo._id));
+  };
 
   return (
     <div className="bg-gray-100 dark:bg-slate-800 p-4 rounded-2xl">
       <h2 className="text-gray-400 mb-4">Your Tasks</h2>
 
+      {/* ACTIVE TASKS */}
+      <h3 className="text-gray-500 mb-2">Active Tasks</h3>
       <div className="space-y-3">
-        {safeTodos.map(
-          (
-            todo, // ✅ FIX
-          ) => (
-            <div
-              key={todo._id}
-              className="p-4 bg-gray-200 dark:bg-slate-700 rounded-xl">
-              <div>
-                <p className="font-medium">{todo.title}</p>
-                <p className="text-sm text-gray-400">{todo.tags?.join(", ")}</p>
-              </div>
-
-              <div className="flex gap-2">
-                {/* <button
-                  onClick={async () => {
-                    <button
-                      onClick={async () => {
-                        await updateTodo(todo._id, {
-                          completed: !todo.completed,
-                        });
-                        refresh();
-                      }}
-                      className="bg-blue-500 px-2 rounded">
-                      {todo.completed ? "Undo" : "Done"}
-                    </button>;
-                  }}
-                  className="bg-blue-500 px-2 rounded">
-                  {todo.completed ? "Undo" : "Done"}
-                </button> */}
-                <button
-                  onClick={async () => {
-                    await updateTodo(todo._id, {
-                      completed: !todo.completed,
-                    });
-
-                    setTodos((prev) =>
-                      prev.map((t) =>
-                        t._id === todo._id
-                          ? { ...t, completed: !t.completed }
-                          : t,
-                      ),
-                    );
-
-                    // optional:
-                    // refresh();
-                  }}
-                  className="bg-blue-500 px-2 rounded">
-                  {todo.completed ? "Undo" : "Done"}
-                </button>
-
-                <button
-                  onClick={async () => {
-                    await deleteTodo(todo._id);
-                    setTodos((prev) => prev.filter((t) => t._id !== todo._id));
-                    // refresh();
-                  }}
-                  className="bg-red-500 px-2 rounded">
-                  Delete
-                </button>
-              </div>
+        {activeTodos.map((todo) => (
+          <div
+            key={todo._id}
+            className="p-4 bg-gray-200 dark:bg-slate-700 rounded-xl">
+            <div>
+              <p className="font-medium">{todo.title}</p>
+              <p className="text-sm text-gray-400">{todo.tags?.join(", ")}</p>
             </div>
-          ),
-        )}
+
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => toggleTodo(todo, true)}
+                className="bg-blue-500 px-2 rounded">
+                Done
+              </button>
+
+              <button
+                onClick={() => removeTodo(todo)}
+                className="bg-red-500 px-2 rounded">
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* COMPLETED TASKS */}
+      <h3 className="text-gray-500 mt-6 mb-2">Completed Tasks</h3>
+      <div className="space-y-3">
+        {completedTodos.map((todo) => (
+          <div
+            key={todo._id}
+            className="p-4 bg-green-200 dark:bg-green-800 rounded-xl">
+            <div>
+              <p className="font-medium line-through">{todo.title}</p>
+              <p className="text-sm text-gray-400">{todo.tags?.join(", ")}</p>
+            </div>
+
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => toggleTodo(todo, false)}
+                className="bg-blue-500 px-2 rounded">
+                Undo
+              </button>
+
+              <button
+                onClick={() => removeTodo(todo)}
+                className="bg-red-500 px-2 rounded">
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
