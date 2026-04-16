@@ -194,7 +194,7 @@ import { updateTodo, deleteTodo } from "../services/api";
 
 interface Props {
   todos: Todo[];
-  refresh: () => void;
+  // refresh: () => void;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
 }
 
