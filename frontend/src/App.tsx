@@ -126,12 +126,12 @@ export default function App() {
           <div className="flex flex-1  border-r border-slate-700 overflow-hidden">
             {/* AI Assistant (50%) */}
             <div className="flex-1 h-screen sticky top-0 p-4">
-              <Chat setTodos={setTodos} />
+              <Chat setTodos={setTodos} todos={todos} />
             </div>
 
             {/* Todo List (50% + scroll) */}
             <div className="flex-1 p-4 overflow-y-auto scroll-smooth">
-              <TodoList todos={todos} refresh={loadTodos} setTodos={setTodos} />
+              <TodoList todos={todos} setTodos={setTodos} />
             </div>
           </div>
         </div>
