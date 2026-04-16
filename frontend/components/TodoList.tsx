@@ -134,7 +134,7 @@ export default function TodoList({ todos, refresh, setTodos }: Props) {
               </div>
 
               <div className="flex gap-2">
-                <button
+                {/* <button
                   onClick={async () => {
                     <button
                       onClick={async () => {
@@ -146,6 +146,26 @@ export default function TodoList({ todos, refresh, setTodos }: Props) {
                       className="bg-blue-500 px-2 rounded">
                       {todo.completed ? "Undo" : "Done"}
                     </button>;
+                  }}
+                  className="bg-blue-500 px-2 rounded">
+                  {todo.completed ? "Undo" : "Done"}
+                </button> */}
+                <button
+                  onClick={async () => {
+                    await updateTodo(todo._id, {
+                      completed: !todo.completed,
+                    });
+
+                    setTodos((prev) =>
+                      prev.map((t) =>
+                        t._id === todo._id
+                          ? { ...t, completed: !t.completed }
+                          : t,
+                      ),
+                    );
+
+                    // optional:
+                    // refresh();
                   }}
                   className="bg-blue-500 px-2 rounded">
                   {todo.completed ? "Undo" : "Done"}
