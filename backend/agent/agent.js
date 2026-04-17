@@ -576,24 +576,17 @@ export const runAgent = async (userMessage) => {
     });
 
     // ✅ STREAM output like ChatGPT
-    let lastTool = null;
 
-    for await (const chunk of result.fullStream) {
-      if (chunk.type === "text-delta") {
-        process.stdout.write(chunk.textDelta);
-      }
+    let fullText = "";
 
-      if (chunk.type === "tool-call") {
-        lastTool = chunk.toolName;
-      }
-      if (lastTool === "create_todo") {
-        console.log("✅ Task created successfully");
-      } else if (lastTool === "update_todo") {
-        console.log("✏️ Task updated successfully");
-      } else if (lastTool === "delete_todo") {
-        console.log("🗑️ Task deleted successfully");
-      }
+    for await (const chunk of result.textStream) {
+      process.stdout.write(chunk);
+      fullText += chunk;
     }
+
+    return {
+      reply: fullText || "No response",
+    };
   } catch (err) {
     console.error("❌ AGENT ERROR:", err.message);
 
