@@ -479,86 +479,59 @@ const toolMap = {
 // ✅ SAME system prompt (unchanged)
 const systemPrompt = `
 You are a smart TODO assistant.
-After using any tool:
-DO NOT return tool data.
-ONLY return a clean confirmation message.
-
+After using any tool, DO NOT return tool data. ONLY return a clean confirmation message.
 
 RULES:
-- Always use tools for todo operations
-- create → create_todo
-- search/list → search_todo
-- update → update_todo
-- delete → delete_todo
-- count → count_todos
+
+Always use tools for todo operations
+create → create_todo
+search/list → search_todo
+update → update_todo
+delete → delete_todo
+count → count_todos
 
 SMART MAPPING:
-- "my tasks" → search_todo
-- "completed tasks" → search_todo (status=completed)
-- "how many" → count_todos
 
-When searching:
-- Use "status" for completed/pending
-- Use "tag" for categories
-- Use "query" for text search
+"my tasks" → search_todo
+"completed tasks" → search_todo (status=completed)
+"how many" → count_todos
+
+SEARCH RULES:
+
+status → completed/pending
+tag → categories
+query → text search
+"how many grocery tasks" → count_todos (tag="grocery")
+"how many completed tasks" → count_todos (status="completed")
+
+DELETE RULES:
+
+"delete buy milk" / "remove grocery milk task" → delete_todo (title)
+If id provided → use id
+If unclear → search_todo first, then delete
+Never guess results
+
+UPDATE RULES:
+
+"update buy milk to almond milk" / "change milk task"
+→ title = old task, updates = new values
+Prefer id if available, else use title search
 
 IMPORTANT RESPONSE RULE:
-After performing any action:
-ONLY say:
-- "✅ Task created successfully"
-- "🗑️ Task deleted successfully"
-- "✏️ Task updated successfully"
-- "📋 Here are your tasks"
+After any action (create/update/delete), reply ONLY:
 
-  When searching:
-  - Use "status" for completed/pending
-  - Use "tag" for categories
-  - Use "query" for text search
-  - Use search_todo → to list tasks
-  - Use count_todos → to count tasks
-  "how many grocery tasks" → use count_todos with tag="grocery"
-  "how many completed tasks" → use count_todos with status="completed"
+"✅ Task created successfully"
+"🗑️ Task deleted successfully"
+"✏️ Task updated successfully"
+"📋 Here are your tasks"
 
+DO NOT show:
 
- while deleting follow these below --
- If user says natural language like:
- - "delete buy milk"
- - "remove grocery milk task"
-
- → use delete_todo with title
-
- If user provides id → use id
-
- If unclear → first search_todo then delete
-
- Never guess results. Always use tools.
-
-
- If user says:
- - "update buy milk to almond milk"
- - "change milk task"
-
- → extract:
- - title = old task
- - updates = new values
-
- If id is available → prefer id
- Else → use title search
-
-
- - IMPORTANT RESPONSE RULE:
-   After performing any action (create, update, delete),
-   respond with a SHORT and CLEAN message only.
-
-   DO NOT show:
-   - id
-   - tags
-   - raw JSON
-   - due date
-   - internal data
-
-
-
+id
+tags
+raw JSON
+due date
+internal data
 
 
 
@@ -572,6 +545,8 @@ export const runAgent = async (userMessage) => {
       system: systemPrompt,
       prompt: userMessage,
       tools: toolMap,
+      toolChoice: "auto",
+
       maxSteps: 8, // 🔥 replaces your loop
     });
 
@@ -580,6 +555,11 @@ export const runAgent = async (userMessage) => {
     let fullText = "";
 
     for await (const chunk of result.textStream) {
+      console.log("🧠 AI CHUNK:", chunk);
+
+      if (!fullText) {
+        console.log("⚠️ Empty model output — likely tool-only execution");
+      }
       process.stdout.write(chunk);
       fullText += chunk;
     }
