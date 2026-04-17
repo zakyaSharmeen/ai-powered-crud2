@@ -153,6 +153,157 @@
 //     </div>
 //   );
 // }
+
+////////////////////////////////////
+// working
+// import { useState } from "react";
+// import { sendChat, updateTodo, deleteTodo } from "../services/api";
+
+// export interface Todo {
+//   _id: string;
+//   title: string;
+//   description?: string;
+//   completed: boolean;
+//   tags?: string[];
+// }
+
+// export interface ChatMessage {
+//   role: "user" | "assistant";
+//   text: string;
+// }
+
+// interface Props {
+//   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+//   todos: Todo[];
+// }
+
+// export default function Chat({ setTodos, todos }: Props) {
+//   const [message, setMessage] = useState("");
+//   const [chat, setChat] = useState<ChatMessage[]>([]);
+
+//   const handleSend = async () => {
+//     if (!message.trim()) return;
+
+//     const lowerMsg = message.toLowerCase();
+
+//     setChat((prev) => [...prev, { role: "user", text: message }]);
+
+//     // =========================
+//     // ✅ DELETE INTENT (NEW)
+//     // =========================
+//     if (lowerMsg.includes("delete") || lowerMsg.includes("remove")) {
+//       const taskName = lowerMsg.replace(/delete|remove|task|todo/g, "").trim();
+
+//       const task = todos.find((t) => t.title.toLowerCase().includes(taskName));
+
+//       if (!task) {
+//         setChat((prev) => [
+//           ...prev,
+//           { role: "assistant", text: "Task not found." },
+//         ]);
+//         setMessage("");
+//         return;
+//       }
+
+//       await deleteTodo(task._id);
+
+//       setTodos((prev) => prev.filter((t) => t._id !== task._id));
+
+//       setChat((prev) => [
+//         ...prev,
+//         {
+//           role: "assistant",
+//           text: `Deleted "${task.title}" successfully 🗑️`,
+//         },
+//       ]);
+
+//       setMessage("");
+//       return;
+//     }
+
+//     // =========================
+//     // ✅ COMPLETE / MARK DONE
+//     // =========================
+//     if (lowerMsg.includes("completed") || lowerMsg.includes("mark")) {
+//       const taskName = lowerMsg.replace(/completed|mark|as|done/g, "").trim();
+
+//       const task = todos.find((t) => t.title.toLowerCase().includes(taskName));
+
+//       if (!task) {
+//         setMessage("");
+//         return;
+//       }
+
+//       await updateTodo(task._id, { completed: true });
+
+//       setTodos((prev) =>
+//         prev.map((t) => (t._id === task._id ? { ...t, completed: true } : t)),
+//       );
+
+//       setChat((prev) => [
+//         ...prev,
+//         {
+//           role: "assistant",
+//           text: "Task marked as completed successfully.",
+//         },
+//       ]);
+
+//       setMessage("");
+//       return;
+//     }
+
+//     // =========================
+//     // 🔵 NORMAL AI FLOW
+//     // =========================
+//     const data = await sendChat(message);
+
+//     setChat((prev) => [
+//       ...prev,
+//       { role: "assistant", text: data.reply.reply || data.reply },
+//     ]);
+
+//     setTodos(data?.todos || []);
+//     setMessage("");
+//   };
+
+//   return (
+//     <div className="bg-gray-100 dark:bg-slate-800 text-black dark:text-white h-full rounded-xl flex flex-col p-4">
+//       <h2 className="text-gray-400 mb-2">AI Assistant</h2>
+
+//       <div className="flex-1 overflow-y-auto space-y-2 mb-4">
+//         {chat.map((msg, i) => (
+//           <div
+//             key={i}
+//             className={`p-2 rounded-lg ${
+//               msg.role === "user"
+//                 ? "bg-gray-200 dark:bg-slate-700"
+//                 : "bg-green-600 ml-auto"
+//             }`}>
+//             {msg.text}
+//           </div>
+//         ))}
+//       </div>
+
+//       <div className="flex gap-2">
+//         <input
+//           value={message}
+//           onChange={(e) => setMessage(e.target.value)}
+//           className="flex-1 p-2 rounded-lg bg-gray-200 dark:bg-slate-700 text-black dark:text-white"
+//           placeholder="Ask AI..."
+//         />
+
+//         <button
+//           onClick={handleSend}
+//           className="bg-green-500 px-4 rounded-lg cursor-pointer text-white">
+//           Send
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+///////////////////////////////////////
+
 import { useState } from "react";
 import { sendChat, updateTodo, deleteTodo } from "../services/api";
 
@@ -256,7 +407,13 @@ export default function Chat({ setTodos, todos }: Props) {
 
     setChat((prev) => [
       ...prev,
-      { role: "assistant", text: data.reply.reply || data.reply },
+      {
+        role: "assistant",
+        text:
+          typeof data.reply === "string"
+            ? data.reply
+            : data.reply?.reply || "No response",
+      },
     ]);
 
     setTodos(data?.todos || []);
@@ -276,7 +433,7 @@ export default function Chat({ setTodos, todos }: Props) {
                 ? "bg-gray-200 dark:bg-slate-700"
                 : "bg-green-600 ml-auto"
             }`}>
-            {msg.text}
+            {typeof msg.text === "string" ? msg.text : JSON.stringify(msg.text)}
           </div>
         ))}
       </div>
