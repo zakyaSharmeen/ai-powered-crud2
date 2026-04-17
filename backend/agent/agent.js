@@ -565,7 +565,7 @@ export const runAgent = async (userMessage) => {
     }
 
     return {
-      reply: fullText || "No response",
+      reply: fullText || "done",
     };
   } catch (err) {
     console.error("❌ AGENT ERROR:", err.message);
