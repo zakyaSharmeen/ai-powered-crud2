@@ -479,6 +479,9 @@ const toolMap = {
 // ✅ SAME system prompt (unchanged)
 const systemPrompt = `
 You are a smart TODO assistant.
+After using any tool:
+DO NOT return tool data.
+ONLY return a clean confirmation message.
 
 
 RULES:
@@ -573,15 +576,24 @@ export const runAgent = async (userMessage) => {
     });
 
     // ✅ STREAM output like ChatGPT
-    for await (const chunk of result.textStream) {
-      process.stdout.write(chunk);
+    let lastTool = null;
+
+    for await (const chunk of result.fullStream) {
+      if (chunk.type === "text-delta") {
+        process.stdout.write(chunk.textDelta);
+      }
+
+      if (chunk.type === "tool-call") {
+        lastTool = chunk.toolName;
+      }
+      if (lastTool === "create_todo") {
+        console.log("✅ Task created successfully");
+      } else if (lastTool === "update_todo") {
+        console.log("✏️ Task updated successfully");
+      } else if (lastTool === "delete_todo") {
+        console.log("🗑️ Task deleted successfully");
+      }
     }
-
-    console.log("\n");
-
-    return {
-      reply: "done", // optional
-    };
   } catch (err) {
     console.error("❌ AGENT ERROR:", err.message);
 
