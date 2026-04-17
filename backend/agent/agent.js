@@ -479,8 +479,7 @@ const toolMap = {
 // ✅ SAME system prompt (unchanged)
 const systemPrompt = `
 You are a smart TODO assistant.
-Respond naturally and start speaking immediately.
-Do not wait. Keep it engaging and supportive.
+
 
 RULES:
 - Always use tools for todo operations
