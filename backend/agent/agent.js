@@ -479,7 +479,8 @@ const toolMap = {
 // ✅ SAME system prompt (unchanged)
 const systemPrompt = `
 You are a smart TODO assistant.
-After using any tool, DO NOT return tool data. ONLY return a clean confirmation message.
+After performing an action, respond briefly confirming success in natural language.
+Do not include tool output.
 
 RULES:
 
@@ -538,6 +539,64 @@ internal data
 `;
 
 // ✅ Agent with streaming
+// export const runAgent = async (userMessage) => {
+//   try {
+//     const result = await streamText({
+//       model: openrouter("moonshotai/kimi-k2.5"),
+//       system: systemPrompt,
+//       prompt: userMessage,
+//       tools: toolMap,
+//       toolChoice: "auto",
+//       maxSteps: 8, // 🔥 replaces your loop
+//     });
+
+//     // ✅ STREAM output like ChatGPT
+//     let fullText = "";
+// let hasText = false;
+
+// for await (const chunk of result.textStream) {
+//   hasText = true;
+//   process.stdout.write(chunk);
+//   fullText += chunk;
+// }
+
+// const finalText = fullText.trim();
+// let reply = finalText;
+
+// // 🔥 If model returned nothing, but tool executed → infer response
+// if (!reply) {
+//   if (lastTool?.toolName === "create_todo") {
+//     reply = "✅ Task created successfully";
+//   }
+
+//   if (lastTool?.toolName === "delete_todo") {
+//     reply = "🗑️ Task deleted successfully";
+//   }
+
+//   if (lastTool?.toolName === "update_todo") {
+//     reply = "✏️ Task updated successfully";
+//   }
+
+//   if (lastTool?.toolName === "search_todo") {
+//     reply = "📋 Here are your tasks";
+//   }
+
+//   if (lastTool?.toolName === "count_todos") {
+//     reply = "📊 Count retrieved successfully";
+//   }
+// }
+// const toolResults = await result.toolResults?.();
+// const lastTool = toolResults?.at(-1);
+
+//   } catch (err) {
+//     console.error("❌ AGENT ERROR:", err.message);
+
+//     return {
+//       reply: "Something went wrong, try again",
+//     };
+//   }
+// };
+
 export const runAgent = async (userMessage) => {
   try {
     const result = await streamText({
@@ -546,26 +605,41 @@ export const runAgent = async (userMessage) => {
       prompt: userMessage,
       tools: toolMap,
       toolChoice: "auto",
-
-      maxSteps: 8, // 🔥 replaces your loop
+      maxSteps: 8,
     });
 
-    // ✅ STREAM output like ChatGPT
-
     let fullText = "";
+    let hasText = false;
 
     for await (const chunk of result.textStream) {
-      console.log("🧠 AI CHUNK:", chunk);
-
-      if (!fullText) {
-        console.log("⚠️ Empty model output — likely tool-only execution");
-      }
+      hasText = true;
       process.stdout.write(chunk);
       fullText += chunk;
     }
 
+    const finalText = fullText.trim();
+
+    // ✅ MUST be BEFORE fallback usage
+    const toolResults = await result.toolResults?.();
+    const lastTool = toolResults?.at(-1);
+
+    let reply = finalText;
+
+    // 🔥 fallback if model stays silent
+    if (!reply) {
+      const tool = lastTool?.toolName;
+
+      if (tool === "create_todo") reply = "✅ Task created successfully";
+      else if (tool === "delete_todo") reply = "🗑️ Task deleted successfully";
+      else if (tool === "update_todo") reply = "✏️ Task updated successfully";
+      else if (tool === "search_todo") reply = "📋 Here are your tasks";
+      else if (tool === "count_todos")
+        reply = "📊 Count retrieved successfully";
+      else reply = "Done";
+    }
+
     return {
-      reply: fullText || "done",
+      reply,
     };
   } catch (err) {
     console.error("❌ AGENT ERROR:", err.message);
